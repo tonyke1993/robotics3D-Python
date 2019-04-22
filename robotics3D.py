@@ -1,4 +1,4 @@
-from math import atan2, sin, cos
+from math import atan2, sin, cos, sqrt
 import numpy as np
 
 
@@ -100,3 +100,18 @@ def aa2rot(v, t):
                   [v[2] * st, ct, -v[0] * st],
                   [-v[1] * st, v[0] * st, ct]])
     return np.outer(v, v * vt) + r
+
+
+# converts a rotational matrix to a unit quaternion, according to JPL
+# procedure (Breckenridge Memo)
+# TODO: Extend to the full version
+def rot2quat(r):
+    t = r.trace()
+
+    #    maxpivot = np.argmax([r[0][0], r[1][1], r[2][2], t])
+
+    q = np.empty(shape=4)
+    q[0] = sqrt((1 + 2 * r[0][0] - t) / 4)
+    q[1:] = 1 / (4 * q[0]) * np.array([r[0][1] + r[1][0], r[0][2] + r[2][0], r[1][2] - r[2][1]])
+
+    return q
